@@ -1,0 +1,7 @@
+node_modules
+dist
+test
+Dockerfile
+Dockerfile.devlopment
+docker-compose.*
+.env
