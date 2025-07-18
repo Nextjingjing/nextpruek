@@ -22,7 +22,7 @@ services:
       PGADMIN_SERVER_MODE: "True"
       PGADMIN_CONFIG_SERVER_MODE: "True"
     ports:
-      - ":5050:80"
+      - "5050:80"
     networks:
       - backend-network
     depends_on:
@@ -36,12 +36,14 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/app
+      - /app/node_modules
+      - .env.development:/app/.env.development
     depends_on:
       - db
     networks:
       - backend-network
+
 
 volumes:
   pgdata:
