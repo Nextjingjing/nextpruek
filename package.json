@@ -21,8 +21,10 @@
     "prisma:dev": "dotenv -e .env.development -- prisma migrate dev",
     "prisma:staging": "dotenv -e .env.staging -- prisma migrate deploy",
     "prisma:prod": "dotenv -e .env.production -- prisma migrate deploy",
-    "prisma:generate": "dotenv -e .env.production -- prisma generate"
+    "prisma:generate": "prisma generate"
+
   },
+  
   "dependencies": {
     "@nestjs/common": "^11.1.4",
     "@nestjs/config": "^4.0.2",
