@@ -18,6 +18,7 @@ datasource db {
 model User {
   id  Int @id @default(autoincrement())
   email String   @unique
+  password String
   firstName String?
   lastName  String?
   dateOfBirth DateTime?
@@ -65,6 +66,7 @@ model Hotel {
   id Int @id @default(autoincrement())
   name  String @unique
   email String @unique
+  image String
   address String
   phone String
   stars Int
