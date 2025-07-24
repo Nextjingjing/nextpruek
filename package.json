@@ -22,15 +22,15 @@
     "prisma:staging": "dotenv -e .env.staging -- prisma migrate deploy",
     "prisma:prod": "dotenv -e .env.production -- prisma migrate deploy",
     "prisma:generate": "prisma generate"
-
   },
-  
   "dependencies": {
     "@nestjs/common": "^11.1.4",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.4",
     "@nestjs/platform-express": "^11.1.4",
     "@prisma/client": "^5.12.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "multer": "2.0.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
