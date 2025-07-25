@@ -2,13 +2,13 @@ import { Body, Controller, Post, UnauthorizedException, Res, ConflictException, 
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { RegisterDto } from './dto/register.dto';
+import { RegisterDto } from './dtos/register.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { LoginDto } from './dto/login.dto';
-import { CurrentUser } from './decorator/currentUser.decorator';
+import { LoginDto } from './dtos/login.dto';
+import { CurrentUser } from './decorators/currentUser.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { UserFromJwt } from './type/userForm.type';
+import { UserFromJwt } from './types/userForm.type';
 
 @Controller('api/auth')
 export class AuthController {

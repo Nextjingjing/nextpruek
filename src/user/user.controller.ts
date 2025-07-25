@@ -1,11 +1,12 @@
-import { Controller, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Req, UseGuards } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from '../auth/decorator/currentUser.decorator';
-import { UserFromJwt } from '../auth/type/userForm.type';
-import { AdminGuard } from '../auth/guard/admin.guard';
+import { CurrentUser } from '../auth/decorators/currentUser.decorator';
+import { UserFromJwt } from '../auth/types/userForm.type';
+import { AdminGuard } from '../auth/guards/admin.guard';
 import { UserService } from './user.service';
 import { User } from 'generated/prisma';
-import { UserResponseDto } from './dto/userResponse.dto';
+import { UserResponseDto } from './dtos/userResponse.dto';
+import { PaginationResponseDto } from '../common/dtos/pagination.dto';
 
 @Controller('api/user')
 export class UserController {
@@ -22,22 +23,25 @@ export class UserController {
 
     @UseGuards(AuthGuard('jwt'), AdminGuard)
     @Get()
-    async getAllUser() {
-        const users: User[] = await this.userService.getAllUser();
-        const dto: UserResponseDto[] = [];
+    async getAllUser(
+        @Query('page') page = '1',
+        @Query('limit') limit = '20'
+    ) {
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
 
-        users.forEach((user: User) => {
-            dto.push({
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                address: user.address,
-                phone: user.phone,
-                isAdmin: user.isAdmin
-            })
-        });
-        return dto;
+        const { users, total } = await this.userService.getAllUser(pageNumber, limitNumber);
+        const data: UserResponseDto[] = users.map((user) => ({
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            address: user.address,
+            phone: user.phone,
+            isAdmin: user.isAdmin,
+        }));
+
+        return new PaginationResponseDto<UserResponseDto>(data, pageNumber, limitNumber, total);
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -52,15 +56,17 @@ export class UserController {
         const user: User | null = await this.userService.getUserById(id);
         if (!user) throw new NotFoundException(`userId = ${id} is not found.`)
         const dto: UserResponseDto = {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                address: user.address,
-                phone: user.phone,
-                isAdmin: user.isAdmin
-            }
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            address: user.address,
+            phone: user.phone,
+            isAdmin: user.isAdmin
+        }
         return dto;
     }
 
+    // @UseGuards(AuthGuard('jwt'))
+    // @Patch(':id')
 }
