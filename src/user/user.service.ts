@@ -14,6 +14,18 @@ export class UserService {
         });
     }
 
+    async getUserById(id: number) {
+        return this.prismaService.user.findUnique({
+            where: {
+                id: id,
+            },
+        });
+    }
+
+    async getAllUser() {
+        return this.prismaService.user.findMany();
+    }
+
     async createUser(email: string, password: string, firstName: string, lastName: string ) {
         const hashedPassword = await bcrypt.hash(password, 10);
         return this.prismaService.user.create({
