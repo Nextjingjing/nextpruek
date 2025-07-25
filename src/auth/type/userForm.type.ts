@@ -1,4 +1,5 @@
 export interface UserFromJwt {
-  userId: string;
+  userId: number;
   email: string;
+  isAdmin: boolean;
 }

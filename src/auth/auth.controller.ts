@@ -43,7 +43,7 @@ export class AuthController {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const payload = { sub: user.id, email: user.email };
+        const payload: UserFromJwt = { userId: user.id, email: user.email, isAdmin: user.isAdmin };
         const token = await this.jwtService.signAsync(payload);
         const cookieMaxAge = parseInt(this.configService.get('JWT_COOKIE_MAX_AGE') || '3600000');
 
