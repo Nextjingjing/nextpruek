@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UnauthorizedException, Res, ConflictException } from '@nestjs/common';
+import { Body, Controller, Post, UnauthorizedException, Res, ConflictException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
@@ -6,6 +6,9 @@ import { RegisterDto } from './dto/register.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
+import { CurrentUser } from './decorator/currentUser.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { UserFromJwt } from './type/userForm.type';
 
 @Controller('api/auth')
 export class AuthController {
@@ -51,9 +54,27 @@ export class AuthController {
             maxAge: cookieMaxAge,
         });
 
+        return {
+            message: 'Login successful',
+            user
+        };
+    }
+
+    @Post('logout')
+    @UseGuards(AuthGuard('jwt'))
+    async logout(
+        @CurrentUser() user: UserFromJwt,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        res.clearCookie('access_token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+        });
+
         return { 
-            message: 'Login successful', 
-            user 
-            };
+            message: 'Logout successful',
+            user: user
+         };
     }
 }
