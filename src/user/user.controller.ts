@@ -30,8 +30,8 @@ export class UserController {
         const pageNumber = parseInt(page, 10);
         const limitNumber = parseInt(limit, 10);
 
-        const { users, total } = await this.userService.getAllUser(pageNumber, limitNumber);
-        const data: UserResponseDto[] = users.map((user) => ({
+        const pagination = await this.userService.getAllUser(pageNumber, limitNumber);
+        const data: UserResponseDto[] = pagination.users.map((user) => ({
             id: user.id,
             email: user.email,
             firstName: user.firstName,
@@ -41,7 +41,12 @@ export class UserController {
             isAdmin: user.isAdmin,
         }));
 
-        return new PaginationResponseDto<UserResponseDto>(data, pageNumber, limitNumber, total);
+        return new PaginationResponseDto<UserResponseDto>(
+            data, 
+            pagination.page,
+            pagination.limit, 
+            pagination.total
+        );
     }
 
     @UseGuards(AuthGuard('jwt'))

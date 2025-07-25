@@ -34,7 +34,10 @@ export class UserService {
             this.prismaService.user.count()
         ]);
 
-        return { users, total };
+        return { 
+            users, 
+            total, 
+            limit: take };
     }
 
     async createUser(email: string, password: string, firstName: string, lastName: string) {
