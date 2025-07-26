@@ -3,6 +3,7 @@ export class UserResponseDto {
   email: string;
   firstName: string | null;
   lastName: string | null;
+  dateOfBirth: string | null;
   address: string | null;
   phone: String | null;
   isAdmin: boolean;

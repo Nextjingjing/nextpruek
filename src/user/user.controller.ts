@@ -1,4 +1,4 @@
-import { Controller, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import { UserFromJwt } from '../auth/types/userForm.type';
@@ -7,6 +7,7 @@ import { UserService } from './user.service';
 import { User } from 'generated/prisma';
 import { UserResponseDto } from './dtos/userResponse.dto';
 import { PaginationResponseDto } from '../common/dtos/pagination.dto';
+import { UserEditDto } from './dtos/userEdit.dto';
 
 @Controller('api/user')
 export class UserController {
@@ -31,15 +32,9 @@ export class UserController {
         const limitNumber = parseInt(limit, 10);
 
         const pagination = await this.userService.getAllUser(pageNumber, limitNumber);
-        const data: UserResponseDto[] = pagination.users.map((user) => ({
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            address: user.address,
-            phone: user.phone,
-            isAdmin: user.isAdmin,
-        }));
+        const data: UserResponseDto[] = pagination.users.map((user) => (
+            this.userService.toUserResponseDto(user)
+        ));
 
         return new PaginationResponseDto<UserResponseDto>(
             data, 
@@ -60,18 +55,20 @@ export class UserController {
         }
         const user: User | null = await this.userService.getUserById(id);
         if (!user) throw new NotFoundException(`userId = ${id} is not found.`)
-        const dto: UserResponseDto = {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            address: user.address,
-            phone: user.phone,
-            isAdmin: user.isAdmin
-        }
+        const dto: UserResponseDto = this.userService.toUserResponseDto(user);
         return dto;
     }
 
-    // @UseGuards(AuthGuard('jwt'))
-    // @Patch(':id')
+    @UseGuards(AuthGuard('jwt'))
+    @Patch(':id')
+    async editUser(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UserEditDto,
+        @CurrentUser() currentUser: UserFromJwt
+    ) {
+        if(currentUser.userId !== id) throw new ForbiddenException('You can only edit your own profile.');
+        
+        const user: User = await this.userService.editUser(id, dto);
+        return this.userService.toUserResponseDto(user);
+    }
 }
