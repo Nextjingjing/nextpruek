@@ -51,7 +51,8 @@ export class UserController {
         @Param('id', ParseIntPipe) id: number
     ) {
         if (!currentUser.isAdmin && currentUser.userId !== id) {
-            throw new ForbiddenException('You can only access your own data.');
+            throw new ForbiddenException(
+                `You can only access your own data. try GET /api/user/${currentUser.userId}`);
         }
         const user: User | null = await this.userService.getUserById(id);
         if (!user) throw new NotFoundException(`userId = ${id} is not found.`)
@@ -66,7 +67,8 @@ export class UserController {
         @Body() dto: UserEditDto,
         @CurrentUser() currentUser: UserFromJwt
     ) {
-        if(currentUser.userId !== id) throw new ForbiddenException('You can only edit your own profile.');
+        if(currentUser.userId !== id) throw new ForbiddenException(
+            `You can only edit your own profile. try PATCH /api/user/${currentUser.userId}`);
         
         const user: User = await this.userService.editUser(id, dto);
         return this.userService.toUserResponseDto(user);
