@@ -94,6 +94,8 @@ export class UserController {
         @Param('id', ParseIntPipe) id: number,
         @CurrentUser() currentUser: UserFromJwt
     ) {
-        
+        if(currentUser.userId !== id) throw new ForbiddenException(
+            `You can only delete your own profile. try DELETE /api/user/${currentUser.userId}`);
+        return this.userService.deleteUser(id);
     }
 }

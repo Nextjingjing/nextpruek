@@ -105,5 +105,18 @@ export class UserService {
         };
     }
 
+    async deleteUser(id: number) {
+        try {
+            await this.prismaService.user.delete({
+                where: { id },
+            });
+            return { message: `User with id ${id} has been deleted.` };
+        } catch (error) {
+            if (error.code === 'P2025') {
+                throw new NotFoundException(`User with id ${id} not found.`);
+            }
 
+            throw error;
+        }
+    }
 }
