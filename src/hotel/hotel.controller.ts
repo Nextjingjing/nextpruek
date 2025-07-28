@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { HotelService } from './hotel.service';
 
 @Controller('api/hotel')
@@ -6,7 +6,17 @@ export class HotelController {
     constructor(private hotelService: HotelService) {}
 
     @Get()
-    getUsers() {
+    getAllHotel() {
     return this.hotelService.getAllHotel();
   }
+
+  @Get(':id')
+  getHotelById(@Param('id', ParseIntPipe) id: number) {
+    return this.hotelService.getHotel(id);
+  }
+
+  // @Post()
+  // createHotel() {
+    
+  // }
 }

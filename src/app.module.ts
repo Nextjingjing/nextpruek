@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { HotelModule } from './hotel/hotel.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -10,7 +12,9 @@ import { HotelModule } from './hotel/hotel.module';
       isGlobal: true,
     }),
     PrismaModule,
-    HotelModule
+    HotelModule,
+    UserModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],
