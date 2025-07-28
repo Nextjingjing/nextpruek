@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, ParseIntPipe, Patch, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from '../auth/decorators/currentUser.decorator';
 import { UserFromJwt } from '../auth/types/userForm.type';
@@ -8,6 +8,7 @@ import { User } from 'generated/prisma';
 import { UserResponseDto } from './dtos/userResponse.dto';
 import { PaginationResponseDto } from '../common/dtos/pagination.dto';
 import { UserEditDto } from './dtos/userEdit.dto';
+import { UserUpdateDto } from './dtos/userUpdate.dto';
 
 @Controller('api/user')
 export class UserController {
@@ -72,5 +73,27 @@ export class UserController {
         
         const user: User = await this.userService.editUser(id, dto);
         return this.userService.toUserResponseDto(user);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Put(':id')
+    async updateUser(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UserUpdateDto,
+        @CurrentUser() currentUser: UserFromJwt
+    ) {
+        if(currentUser.userId !== id) throw new ForbiddenException(
+            `You can only update your own profile. try PUT /api/user/${currentUser.userId}`);
+        const user: User = await this.userService.editUser(id, dto);
+        return this.userService.toUserResponseDto(user);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete(':id')
+    async deleteUser(
+        @Param('id', ParseIntPipe) id: number,
+        @CurrentUser() currentUser: UserFromJwt
+    ) {
+        
     }
 }
